@@ -748,7 +748,60 @@ ORDER  BY average DESC;
 
 
 
+--------------------------------------------------------------------
+-- Create the "developers" table
+CREATE TABLE developers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    reportsTo VARCHAR(255)
+);
 
+-- Insert data into the "developers" table
+INSERT INTO developers (id, name, reportsTo)
+VALUES
+  (1, 'Hamza', NULL),
+  (2, 'Ehtesham', NULL),
+  (3, 'Talal', 'Hamza'),
+  (4, 'Aman', 'Talal'),
+  (5, 'Abdullah', 'Talal'),
+  (6, 'Osama', 'Talal'),
+  (7, 'Usman', 'Talal'),
+  (8, 'Bilal', 'Ehtesham'),
+  (9, 'Haris', 'Ehtesham'),
+  (10, 'Rameez', 'Ehtesham'),
+  (11, 'Taha', 'Haris'),
+  (12, 'Maaz', 'Hamza');
+select * from developers;
+
+WITH RECURSIVE ReportingHierarchy AS (
+  SELECT
+    id,
+    name,
+    reportsTo,
+    1 AS level
+  FROM
+    developers
+  WHERE
+    reportsTo IS NULL
+
+  UNION ALL
+
+  SELECT
+    d.id,
+    d.name,
+    d.reportsTo,
+    rh.level + 1 AS level
+  FROM
+    developers d
+  JOIN
+    ReportingHierarchy rh ON d.reportsTo = rh.name
+)
+SELECT
+  *
+FROM
+  ReportingHierarchy
+ORDER BY
+  level, id;
 
 
 
